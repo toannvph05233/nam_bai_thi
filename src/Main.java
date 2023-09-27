@@ -21,6 +21,9 @@ public class Main extends JFrame {
     private Connection connection;
     private ProductService productService;
 
+    private JButton btnTimKiem;
+    private JPanel resultPanel;
+
     public Main() {
         setTitle("Quản lý quyền");
         setSize(600, 400);
@@ -52,6 +55,8 @@ public class Main extends JFrame {
         buttonPanel.add(btnThem);
         buttonPanel.add(btnSua);
         buttonPanel.add(btnXoa);
+        btnTimKiem = new JButton("Tìm kiếm");
+        buttonPanel.add(btnTimKiem);
 
         // Panel bảng
         JPanel tablePanel = new JPanel(new BorderLayout());
@@ -189,6 +194,30 @@ public class Main extends JFrame {
                     txtId.setText(id);
                     txtName.setText(name);
                     txtPrice.setText(price);
+                }
+            }
+        });
+        // Thêm sự kiện cho nút "Tìm kiếm"
+        btnTimKiem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String idToSearch = txtId.getText().trim();
+                if (!idToSearch.isEmpty()) {
+                    // Duyệt qua bảng để tìm kiếm các hàng thỏa mãn điều kiện tìm kiếm
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        String idInTable = tableModel.getValueAt(i, 0).toString();
+                        if (idInTable.equals(idToSearch)) {
+                            // Nếu tìm thấy, hiển thị thông tin tìm kiếm dưới vùng hiển thị kết quả
+                            String name = tableModel.getValueAt(i, 1).toString();
+                            String price = tableModel.getValueAt(i, 2).toString();
+                            txtId.setText(idInTable);
+                            txtName.setText(name);
+                            txtPrice.setText(price);
+                            return;
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Vui lòng nhập mã cần tìm kiếm.");
                 }
             }
         });
