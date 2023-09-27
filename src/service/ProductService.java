@@ -1,6 +1,6 @@
 package service;
 
-import model.Quyen;
+import model.Product;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,32 +9,32 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuyenService {
+public class ProductService {
     private Connection connection;
 
-    public QuyenService(Connection connection) {
+    public ProductService(Connection connection) {
         this.connection = connection;
     }
 
-    public List<Quyen> getDanhSachQuyen() {
-        List<Quyen> danhSachQuyen = new ArrayList<>();
+    public List<Product> getDanhSachProduct() {
+        List<Product> danhSachProduct = new ArrayList<>();
 
         try {
-            String sql = "SELECT MaQuyen, TenQuyen, NhomQuyen FROM Quyen";
+            String sql = "SELECT id, name, price FROM Product";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                String maQuyen = resultSet.getString("MaQuyen");
-                String tenQuyen = resultSet.getString("TenQuyen");
-                String maNhomQuyen = resultSet.getString("NhomQuyen");
+                String id = resultSet.getString("id");
+                String name = resultSet.getString("name");
+                String price = resultSet.getString("price");
 
-                Quyen quyen = new Quyen();
-                quyen.setMaQuyen(maQuyen);
-                quyen.setTenQuyen(tenQuyen);
-                quyen.setMaNhomQuyen(maNhomQuyen);
+                Product product = new Product();
+                product.setId(id);
+                product.setName(name);
+                product.setPrice(price);
 
-                danhSachQuyen.add(quyen);
+                danhSachProduct.add(product);
             }
 
             resultSet.close();
@@ -44,22 +44,22 @@ public class QuyenService {
             e.printStackTrace();
         }
 
-        return danhSachQuyen;
+        return danhSachProduct;
     }
 
     // Hàm thêm quyền vào CSDL
-    public boolean insertQuyen(String maQuyen, String tenQuyen, String maNhomQuyen) {
+    public boolean insertProduct(String id, String name, String price) {
         try {
-            String sql = "INSERT INTO Quyen (MaQuyen, TenQuyen, NhomQuyen) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO Product (id, name, price) VALUES (?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, maQuyen);
-            preparedStatement.setString(2, tenQuyen);
-            preparedStatement.setString(3, maNhomQuyen);
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, name);
+            preparedStatement.setString(3, price);
             int rowsAffected = preparedStatement.executeUpdate();
             preparedStatement.close();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.out.println("Lỗi khi thêm quyền vào CSDL.");
+            System.out.println("Lỗi khi thêm vào CSDL.");
             e.printStackTrace();
             return false;
         }
@@ -67,13 +67,13 @@ public class QuyenService {
 
 
     // Hàm sửa quyền trong CSDL
-    public boolean updateQuyen(String maQuyen, String tenQuyen, String nhomQuyen) {
+    public boolean updateProduct(String id, String name, String price) {
         try {
-            String sql = "UPDATE Quyen SET TenQuyen = ?, NhomQuyen = ? WHERE MaQuyen = ?";
+            String sql = "UPDATE Product SET name = ?, name = ? WHERE price = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, tenQuyen);
-            preparedStatement.setString(2, nhomQuyen);
-            preparedStatement.setString(3, maQuyen);
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, name);
+            preparedStatement.setString(3, price);
             int rowsAffected = preparedStatement.executeUpdate();
             preparedStatement.close();
             return rowsAffected > 0;
@@ -85,16 +85,16 @@ public class QuyenService {
     }
 
     // Hàm xóa quyền khỏi CSDL
-    public boolean deleteQuyen(String maQuyen) {
+    public boolean deleteProduct(String id) {
         try {
-            String sql = "DELETE FROM Quyen WHERE MaQuyen = ?";
+            String sql = "DELETE FROM Product WHERE id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, maQuyen);
+            preparedStatement.setString(1, id);
             int rowsAffected = preparedStatement.executeUpdate();
             preparedStatement.close();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.out.println("Lỗi khi xóa quyền khỏi CSDL.");
+            System.out.println("Lỗi khi xóa khỏi CSDL.");
             e.printStackTrace();
             return false;
         }
