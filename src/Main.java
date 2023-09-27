@@ -3,6 +3,8 @@ import model.Quyen;
 import service.QuyenService;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -74,18 +76,16 @@ public class Main extends JFrame {
         mainPanel.add(tablePanel, BorderLayout.CENTER);
 
 
-        try {
-            // Kết nối đến CSDL SQL Server
-            connection = SQLServerConnection.getConnection();
-            quyenService = new QuyenService(connection);
-            List<Quyen> danhSachQuyen = quyenService.getDanhSachQuyen();
-            for (Quyen quyen : danhSachQuyen) {
-                tableModel.addRow(new Object[]{quyen.getMaQuyen(), quyen.getTenQuyen(), quyen.getMaNhomQuyen()});
-            }
-        } catch (SQLException e) {
-            System.out.println("Lỗi khi kết nối đến CSDL.");
-            e.printStackTrace();
-        }
+//        try {
+//            // Kết nối đến CSDL SQL Server
+//            connection = SQLServerConnection.getConnection();
+//            quyenService = new QuyenService(connection);
+////            showTable();
+//        } catch (SQLException e) {
+//            System.out.println("Lỗi khi kết nối đến CSDL.");
+//            e.printStackTrace();
+//        }
+
 
         btnThem.addActionListener(new ActionListener() {
             @Override
@@ -96,7 +96,8 @@ public class Main extends JFrame {
 
                 if (!maQuyen.isEmpty() && !tenQuyen.isEmpty() && !maNhomQuyen.isEmpty()) {
                     // Thực hiện thêm quyền vào CSDL
-                    boolean isSuccess = quyenService.insertQuyen(maQuyen, tenQuyen, maNhomQuyen);
+//                    boolean isSuccess = quyenService.insertQuyen(maQuyen, tenQuyen, maNhomQuyen);
+                    boolean isSuccess = true;
 
                     if (isSuccess) {
                         // Thêm dữ liệu vào bảng hiển thị quyền
@@ -126,7 +127,8 @@ public class Main extends JFrame {
 
                     if (!maQuyen.isEmpty() && !tenQuyen.isEmpty() && !nhomQuyen.isEmpty()) {
                         // Thực hiện sửa trong CSDL
-                        boolean isSuccess = quyenService.updateQuyen(maQuyen, tenQuyen, nhomQuyen);
+//                        boolean isSuccess = quyenService.updateQuyen(maQuyen, tenQuyen, nhomQuyen);
+                        boolean isSuccess = true;
 
                         if (isSuccess) {
                             // Cập nhật dữ liệu trong bảng hiển thị
@@ -158,11 +160,14 @@ public class Main extends JFrame {
                     String maQuyen = tableModel.getValueAt(selectedRow, 0).toString();
 
                     // Thực hiện xóa trong CSDL
-                    boolean isSuccess = quyenService.deleteQuyen(maQuyen);
+//                    boolean isSuccess = quyenService.deleteQuyen(maQuyen);
+                    boolean isSuccess = true;
 
                     if (isSuccess) {
                         // Xóa dữ liệu khỏi bảng hiển thị
                         tableModel.removeRow(selectedRow);
+                        txtMaQuyen.setText("");
+                        txtTenQuyen.setText("");
                     } else {
                         JOptionPane.showMessageDialog(null, "Lỗi khi xóa quyền khỏi CSDL.");
                     }
@@ -171,9 +176,31 @@ public class Main extends JFrame {
                 }
             }
         });
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1) {
+                    // Lấy dữ liệu từ bảng và hiển thị lên các ô nhập liệu
+                    String maQuyen = tableModel.getValueAt(selectedRow, 0).toString();
+                    String tenQuyen = tableModel.getValueAt(selectedRow, 1).toString();
+                    String nhomQuyen = tableModel.getValueAt(selectedRow, 2).toString();
+
+                    txtMaQuyen.setText(maQuyen);
+                    txtTenQuyen.setText(tenQuyen);
+                }
+            }
+        });
 
 
         add(mainPanel);
+    }
+
+    public void showTable(){
+        List<Quyen> danhSachQuyen = quyenService.getDanhSachQuyen();
+        for (Quyen quyen : danhSachQuyen) {
+            tableModel.addRow(new Object[]{quyen.getMaQuyen(), quyen.getTenQuyen(), quyen.getMaNhomQuyen()});
+        }
     }
 
     public static void main(String[] args) {
